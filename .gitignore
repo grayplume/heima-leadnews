@@ -104,3 +104,4 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 /heima-leadnews-service/heima-leadnews-article/target/
+/heima-leadnews-basic/heima-file-starter/target/
