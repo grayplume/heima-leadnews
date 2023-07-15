@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.heima.apis.article.IArticleClient;
 import com.heima.common.aliyun.GreenImageScan;
 import com.heima.common.aliyun.GreenTextScan;
+import com.heima.common.tess4j.Tess4jClient;
 import com.heima.file.service.FileStorageService;
 import com.heima.model.article.dtos.ArticleDto;
 import com.heima.model.common.dtos.ResponseResult;
@@ -19,6 +20,7 @@ import com.heima.wemedia.mapper.WmSensitiveMapper;
 import com.heima.wemedia.mapper.WmUserMapper;
 import com.heima.wemedia.service.WmNewsAutoScanService;
 import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.tess4j.TesseractException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,9 +72,9 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             // if(!isTextScan)return;
 
             //3.审核图片  阿里云接口
-            // boolean isImageScan =  handleImageScan((List<String>) textAndImages.get("images"),wmNews);
+            boolean isImageScan =  handleImageScan((List<String>) textAndImages.get("images"),wmNews);
             // 因为没有阿里云接口，先注释掉
-            // if(!isImageScan)return;
+            if(!isImageScan)return;
 
             //4.审核成功，保存app端的相关的文章数据
             ResponseResult responseResult = saveAppArticle(wmNews);
@@ -153,9 +159,10 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 
     @Autowired
     private FileStorageService fileStorageService;
-
     @Autowired
     private GreenImageScan greenImageScan;
+    @Autowired
+    private Tess4jClient tess4jClient;
 
     /**
      * 审核图片
@@ -163,50 +170,65 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
      * @param wmNews
      * @return
      */
-    // private boolean handleImageScan(List<String> images, WmNews wmNews) {
-    //
-    //     boolean flag = true;
-    //
-    //     if(images == null || images.size() == 0){
-    //         return flag;
-    //     }
-    //
-    //     //下载图片 minIO
-    //     //图片去重
-    //     images = images.stream().distinct().collect(Collectors.toList());
-    //
-    //     List<byte[]> imageList = new ArrayList<>();
-    //
-    //     for (String image : images) {
-    //         byte[] bytes = fileStorageService.downLoadFile(image);
-    //         imageList.add(bytes);
-    //     }
-    //
-    //
-    //     //审核图片
-    //     // 因为没有阿里云接口，先注释掉
-    //     // try {
-    //     //     Map map = greenImageScan.imageScan(imageList);
-    //     //     if(map != null){
-    //     //         //审核失败
-    //     //         if(map.get("suggestion").equals("block")){
-    //     //             flag = false;
-    //     //             updateWmNews(wmNews, (short) 2, "当前文章中存在违规内容");
-    //     //         }
-    //     //
-    //     //         //不确定信息  需要人工审核
-    //     //         if(map.get("suggestion").equals("review")){
-    //     //             flag = false;
-    //     //             updateWmNews(wmNews, (short) 3, "当前文章中存在不确定内容");
-    //     //         }
-    //     //     }
-    //     //
-    //     // } catch (Exception e) {
-    //     //     flag = false;
-    //     //     e.printStackTrace();
-    //     // }
-    //     return flag;
-    // }
+    private boolean handleImageScan(List<String> images, WmNews wmNews) {
+
+        boolean flag = true;
+
+        if(images == null || images.size() == 0){
+            return flag;
+        }
+
+        //下载图片 minIO
+        //图片去重
+        images = images.stream().distinct().collect(Collectors.toList());
+
+        List<byte[]> imageList = new ArrayList<>();
+
+        try {
+            for (String image : images) {
+                byte[] bytes = fileStorageService.downLoadFile(image);
+                // byte[] 转换为 bufferedImage
+                ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+                BufferedImage bufferedImage = ImageIO.read(in);
+                // 图片识别
+                String result = tess4jClient.doOCR(bufferedImage);
+
+                // 过滤文字
+                boolean isSensitive = handleSensitiveScan(result, wmNews);
+                if (!isSensitive){
+                    return isSensitive;
+                }
+                imageList.add(bytes);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        //审核图片
+        // 因为没有阿里云接口，先注释掉
+        // try {
+        //     Map map = greenImageScan.imageScan(imageList);
+        //     if(map != null){
+        //         //审核失败
+        //         if(map.get("suggestion").equals("block")){
+        //             flag = false;
+        //             updateWmNews(wmNews, (short) 2, "当前文章中存在违规内容");
+        //         }
+        //
+        //         //不确定信息  需要人工审核
+        //         if(map.get("suggestion").equals("review")){
+        //             flag = false;
+        //             updateWmNews(wmNews, (short) 3, "当前文章中存在不确定内容");
+        //         }
+        //     }
+        //
+        // } catch (Exception e) {
+        //     flag = false;
+        //     e.printStackTrace();
+        // }
+        return flag;
+    }
 
     @Autowired
     private GreenTextScan greenTextScan;
