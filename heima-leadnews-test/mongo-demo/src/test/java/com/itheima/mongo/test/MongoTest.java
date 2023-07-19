@@ -36,7 +36,7 @@ public class MongoTest {
     //查询一个
     @Test
     public void saveFindOne(){
-        ApAssociateWords apAssociateWords = mongoTemplate.findById("5fc2fc3fb60c9a039c44556e", ApAssociateWords.class);
+        ApAssociateWords apAssociateWords = mongoTemplate.findById("60bd0060dcf502511cf7dd9d", ApAssociateWords.class);
         System.out.println(apAssociateWords);
     }
 
