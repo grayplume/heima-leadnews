@@ -5,8 +5,7 @@
       <configuration>
         <webroots />
         <sourceRoots>
-          <root url="file://$MODULE_DIR$/heima-leadnews-test/kafka-demo/src/main/java" />
-          <root url="file://$MODULE_DIR$/heima-leadnews-test/kafka-demo/src/main/resources" />
+          <root url="file://$MODULE_DIR$/heima-leadnews-test/xxljob-demo/src/main/java" />
         </sourceRoots>
       </configuration>
     </facet>
@@ -15,17 +14,16 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
-    <output url="file://$MODULE_DIR$/heima-leadnews-test/kafka-demo/target/classes" />
-    <output-test url="file://$MODULE_DIR$/heima-leadnews-test/kafka-demo/target/test-classes" />
-    <content url="file://$MODULE_DIR$/heima-leadnews-test/kafka-demo">
-      <sourceFolder url="file://$MODULE_DIR$/heima-leadnews-test/kafka-demo/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/heima-leadnews-test/kafka-demo/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/heima-leadnews-test/kafka-demo/src/main/resources" type="java-resource" />
-      <excludeFolder url="file://$MODULE_DIR$/heima-leadnews-test/kafka-demo/target" />
+    <output url="file://$MODULE_DIR$/heima-leadnews-test/xxljob-demo/target/classes" />
+    <output-test url="file://$MODULE_DIR$/heima-leadnews-test/xxljob-demo/target/test-classes" />
+    <content url="file://$MODULE_DIR$/heima-leadnews-test/xxljob-demo">
+      <sourceFolder url="file://$MODULE_DIR$/heima-leadnews-test/xxljob-demo/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/heima-leadnews-test/xxljob-demo/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/heima-leadnews-test/xxljob-demo/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/heima-leadnews-test/xxljob-demo/target" />
     </content>
     <orderEntry type="jdk" jdkName="1.8 (2)" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.1" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-web:2.3.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:2.3.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:2.3.9.RELEASE" level="project" />
@@ -49,18 +47,13 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:5.2.13.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-webmvc:5.2.13.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.2.13.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.2.13.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.kafka:spring-kafka:2.6.6" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:5.2.13.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-messaging:5.2.13.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-tx:5.2.13.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.retry:spring-retry:1.2.5.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.kafka:kafka-clients:2.5.1" level="project" />
-    <orderEntry type="library" name="Maven: com.github.luben:zstd-jni:1.4.4-7" level="project" />
-    <orderEntry type="library" name="Maven: org.lz4:lz4-java:1.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.xerial.snappy:snappy-java:1.1.7.3" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.2.13.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: com.xuxueli:xxl-job-core:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.59.Final" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.6" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy:2.5.14" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.30" level="project" />
-    <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.58" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-log4j2:2.3.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.13.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.13.3" level="project" />
