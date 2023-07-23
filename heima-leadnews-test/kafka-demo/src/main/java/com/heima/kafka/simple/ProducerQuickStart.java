@@ -26,7 +26,8 @@ public class ProducerQuickStart {
         KafkaProducer<String,String> producer = new KafkaProducer<String, String>(properties);
 
         //封装发送的消息
-        ProducerRecord<String,String> record = new ProducerRecord<String, String>("itheima-topic","100001","hello kafka");
+        // ProducerRecord<String,String> record = new ProducerRecord<String, String>("itheima-topic","100001","hello kafka");
+
 
         //ack配置  消息确认机制
         properties.put(ProducerConfig.ACKS_CONFIG,"all");
@@ -37,20 +38,26 @@ public class ProducerQuickStart {
         //数据压缩
         properties.put(ProducerConfig.COMPRESSION_TYPE_CONFIG,"lz4");
 
+        for (int i = 0; i < 10; i++) {
+            ProducerRecord<String, String> producerRecord = new ProducerRecord<String,String>("itcast-topic-input", "hello kafka");
+            producer.send(producerRecord);
+        }
+
+
         //3.同步发送消息
         // RecordMetadata recordMetadata = producer.send(record).get();
         // System.out.println(recordMetadata.offset());
 
         //异步消息发送
-        producer.send(record, new Callback() {
-            @Override
-            public void onCompletion(RecordMetadata recordMetadata, Exception e) {
-                if(e != null){
-                    System.out.println("记录异常信息到日志表中");
-                }
-                System.out.println(recordMetadata.offset());
-            }
-        });
+        // producer.send(record, new Callback() {
+        //     @Override
+        //     public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+        //         if(e != null){
+        //             System.out.println("记录异常信息到日志表中");
+        //         }
+        //         System.out.println(recordMetadata.offset());
+        //     }
+        // });
 
         //4.关闭消息通道，必须关闭，否则消息发送不成功
         producer.close();
