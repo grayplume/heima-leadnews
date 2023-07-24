@@ -46,6 +46,7 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
 
             // 获取用户信息
             Object userId = claimsBody.get("id");
+            log.info("存储header中："+userId);
             // 存储header中
             ServerHttpRequest serverHttpRequest = request.mutate().headers(httpHeaders -> {
                 httpHeaders.add("userId", userId + "");

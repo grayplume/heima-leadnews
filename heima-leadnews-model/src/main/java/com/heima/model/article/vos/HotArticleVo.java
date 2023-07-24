@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Data
 public class HotArticleVo extends ApArticle {
-
-    /*分值*/
+    /**
+     * 文章分值
+     */
     private Integer score;
 }

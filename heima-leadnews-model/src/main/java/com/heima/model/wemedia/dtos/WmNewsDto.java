@@ -50,5 +50,5 @@ public class WmNewsDto {
     /**
      * 是否上架  0 下架  1 上架
      */
-    private Short  enable;
+    private Short enable;
 }
