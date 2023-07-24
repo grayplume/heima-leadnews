@@ -10,3 +10,13 @@ spring:
       config:
         server-addr: 192.168.200.130:8848
         file-extension: yml
+xxl:
+  job:
+    admin:
+      addresses: http://192.168.200.130:8888/xxl-job-admin
+    executor:
+      appname: leadnews-hot-article-executor
+      port: 9999
+kafka:
+  hosts: 192.168.200.130:9092
+  group: ${spring.application.name}

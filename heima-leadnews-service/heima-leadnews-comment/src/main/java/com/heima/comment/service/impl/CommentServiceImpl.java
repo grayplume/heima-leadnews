@@ -57,7 +57,7 @@ public class CommentServiceImpl implements CommentService {
 
         //校验文章是否可以评论
         // mark  ！
-        if (checkParam(dto.getArticleId())) {
+        if ( !checkParam(dto.getArticleId())) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "该文章评论权限已关闭");
         }
 

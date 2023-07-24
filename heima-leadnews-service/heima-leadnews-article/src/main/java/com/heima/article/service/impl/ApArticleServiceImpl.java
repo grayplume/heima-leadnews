@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @Slf4j
-public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticle> implements ApArticleService {
+public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper, ApArticle> implements ApArticleService {
 
     // 单页最大加载的数字
     private final static short MAX_PAGE_SIZE = 50;
@@ -57,42 +57,44 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
 
     /**
      * 根据参数加载文章列表
+     *
      * @param loadtype 1为加载更多  2为加载最新
      * @param dto
      * @return
      */
     @Override
     public ResponseResult load(Short loadtype, ArticleHomeDto dto) {
-        //1.校验参数
+        // 1.校验参数
         Integer size = dto.getSize();
-        if(size == null || size == 0){
+        if (size == null || size == 0) {
             size = 10;
         }
-        size = Math.min(size,MAX_PAGE_SIZE);
+        size = Math.min(size, MAX_PAGE_SIZE);
         dto.setSize(size);
 
-        //类型参数检验
-        if(!loadtype.equals(ArticleConstants.LOADTYPE_LOAD_MORE)&&!loadtype.equals(ArticleConstants.LOADTYPE_LOAD_NEW)){
+        // 类型参数检验
+        if (!loadtype.equals(ArticleConstants.LOADTYPE_LOAD_MORE) && !loadtype.equals(ArticleConstants.LOADTYPE_LOAD_NEW)) {
             loadtype = ArticleConstants.LOADTYPE_LOAD_MORE;
         }
-        //文章频道校验
-        if(StringUtils.isEmpty(dto.getTag())){
+        // 文章频道校验
+        if (StringUtils.isEmpty(dto.getTag())) {
             dto.setTag(ArticleConstants.DEFAULT_TAG);
         }
 
-        //时间校验
-        if(dto.getMaxBehotTime() == null) dto.setMaxBehotTime(new Date());
-        if(dto.getMinBehotTime() == null) dto.setMinBehotTime(new Date());
-        //2.查询数据
+        // 时间校验
+        if (dto.getMaxBehotTime() == null) dto.setMaxBehotTime(new Date());
+        if (dto.getMinBehotTime() == null) dto.setMinBehotTime(new Date());
+        // 2.查询数据
         List<ApArticle> apArticles = apArticleMapper.loadArticleList(dto, loadtype);
 
-        //3.结果封装
+        // 3.结果封装
         ResponseResult responseResult = ResponseResult.okResult(apArticles);
         return responseResult;
     }
 
     /**
      * 加载文章列表
+     *
      * @param dto
      * @param type      1 加载更多   2 加载最新
      * @param firstPage true  是首页  flase 非首页
@@ -100,15 +102,15 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
      */
     @Override
     public ResponseResult load2(ArticleHomeDto dto, Short type, boolean firstPage) {
-        if(firstPage){
+        if (firstPage) {
             String jsonStr = cacheService.get(ArticleConstants.HOT_ARTICLE_FIRST_PAGE + dto.getTag());
-            if(StringUtils.isNotBlank(jsonStr)){
+            if (StringUtils.isNotBlank(jsonStr)) {
                 List<HotArticleVo> hotArticleVoList = JSON.parseArray(jsonStr, HotArticleVo.class);
                 ResponseResult responseResult = ResponseResult.okResult(hotArticleVoList);
                 return responseResult;
             }
         }
-        return load(type,dto);
+        return load(type, dto);
     }
 
     @Autowired
@@ -122,54 +124,55 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
 
     /**
      * 保存app端相关文章
+     *
      * @param dto
      * @return
      */
     @Override
     public ResponseResult saveArticle(ArticleDto dto) {
-        //1.检查参数
-        if(dto == null){
+        // 1.检查参数
+        if (dto == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
 
         ApArticle apArticle = new ApArticle();
-        BeanUtils.copyProperties(dto,apArticle);
+        BeanUtils.copyProperties(dto, apArticle);
 
-        //2.判断是否存在id
-        if(dto.getId() == null){
-            //2.1 不存在id  保存  文章  文章配置  文章内容
+        // 2.判断是否存在id
+        if (dto.getId() == null) {
+            // 2.1 不存在id  保存  文章  文章配置  文章内容
 
-            //保存文章
+            // 保存文章
             save(apArticle);
 
-            //保存配置
+            // 保存配置
             ApArticleConfig apArticleConfig = new ApArticleConfig(apArticle.getId());
             log.info("保存文章配置信息");
             apArticleConfigMapper.insert(apArticleConfig);
 
-            //保存 文章内容
+            // 保存 文章内容
             ApArticleContent apArticleContent = new ApArticleContent();
             apArticleContent.setArticleId(apArticle.getId());
             apArticleContent.setContent(dto.getContent());
             apArticleContentMapper.insert(apArticleContent);
 
-        }else {
-            //2.2 存在id   修改  文章  文章内容
+        } else {
+            // 2.2 存在id   修改  文章  文章内容
 
-            //修改  文章
+            // 修改  文章
             updateById(apArticle);
 
-            //修改文章内容
+            // 修改文章内容
             ApArticleContent apArticleContent = apArticleContentMapper.selectOne(Wrappers.<ApArticleContent>lambdaQuery().eq(ApArticleContent::getArticleId, dto.getId()));
             apArticleContent.setContent(dto.getContent());
             apArticleContentMapper.updateById(apArticleContent);
         }
 
-        //异步调用 生成静态文件上传到minio中
-        articleFreemarkerService.buildArticleToMinIO(apArticle,dto.getContent());
+        // 异步调用 生成静态文件上传到minio中
+        articleFreemarkerService.buildArticleToMinIO(apArticle, dto.getContent());
 
 
-        //3.结果返回  文章的id
+        // 3.结果返回  文章的id
         return ResponseResult.okResult(apArticle.getId());
     }
 
@@ -179,7 +182,7 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
     @Override
     public ResponseResult loadArticleBehavior(ArticleInfoDto dto) {
 
-        //0.检查参数
+        // 0.检查参数
         if (dto == null || dto.getArticleId() == null || dto.getAuthorId() == null) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
@@ -188,31 +191,31 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
         boolean isfollow = false, islike = false, isunlike = false, iscollection = false;
 
         ApUser user = AppThreadLocalUtil.getUser();
-        log.info("线程中获取用户id："+user);
-        if(user != null){
+        log.info("线程中获取用户id：" + user);
+        if (user != null) {
             log.info("从redis检查行为");
-            //喜欢行为
+            // 喜欢行为
             String likeBehaviorJson = (String) cacheService.hGet(BehaviorConstants.LIKE_BEHAVIOR + dto.getArticleId().toString(), user.getId().toString());
-            if(StringUtils.isNotBlank(likeBehaviorJson)){
+            if (StringUtils.isNotBlank(likeBehaviorJson)) {
                 log.info("喜欢了");
                 islike = true;
             }
-            //不喜欢的行为
+            // 不喜欢的行为
             String unLikeBehaviorJson = (String) cacheService.hGet(BehaviorConstants.UN_LIKE_BEHAVIOR + dto.getArticleId().toString(), user.getId().toString());
-            if(StringUtils.isNotBlank(unLikeBehaviorJson)){
+            if (StringUtils.isNotBlank(unLikeBehaviorJson)) {
                 isunlike = true;
             }
-            //是否收藏
-            String collctionJson = (String) cacheService.hGet(BehaviorConstants.COLLECTION_BEHAVIOR+user.getId(),dto.getArticleId().toString());
-            if(StringUtils.isNotBlank(collctionJson)){
+            // 是否收藏
+            String collctionJson = (String) cacheService.hGet(BehaviorConstants.COLLECTION_BEHAVIOR + user.getId(), dto.getArticleId().toString());
+            if (StringUtils.isNotBlank(collctionJson)) {
                 log.info("收藏了");
                 iscollection = true;
             }
 
-            //是否关注
+            // 是否关注
             Double score = cacheService.zScore(BehaviorConstants.APUSER_FOLLOW_RELATION + user.getId(), dto.getAuthorId().toString());
             System.out.println(score);
-            if(score != null){
+            if (score != null) {
                 isfollow = true;
             }
 
@@ -229,7 +232,8 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
 
     /**
      * 更新文章的分值  同时更新缓存中的热点文章数据
-     * @param mess
+     *
+     * @param mess ArticleVisitStreamMess
      */
     @Override
     public void updateScore(ArticleVisitStreamMess mess) {
@@ -249,6 +253,7 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
 
     /**
      * 替换数据并且存入到redis
+     *
      * @param apArticle
      * @param score
      * @param s
@@ -299,21 +304,26 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
 
     /**
      * 更新文章行为数量
+     *
      * @param mess
      */
     private ApArticle updateArticle(ArticleVisitStreamMess mess) {
         ApArticle apArticle = getById(mess.getArticleId());
+        log.info("找bug"+String.valueOf(mess.getArticleId()));
+        log.info("找bug"+String.valueOf(apArticle));
         apArticle.setCollection(apArticle.getCollection()==null?0:apArticle.getCollection()+mess.getCollect());
         apArticle.setComment(apArticle.getComment()==null?0:apArticle.getComment()+mess.getComment());
         apArticle.setLikes(apArticle.getLikes()==null?0:apArticle.getLikes()+mess.getLike());
         apArticle.setViews(apArticle.getViews()==null?0:apArticle.getViews()+mess.getView());
         updateById(apArticle);
+        log.info("找bug"+String.valueOf(mess.getCollect()));
         return apArticle;
 
     }
 
     /**
      * 计算文章的具体分值
+     *
      * @param apArticle
      * @return
      */
@@ -337,6 +347,7 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
 
     /**
      * 图文统计统计
+     *
      * @param wmUserId
      * @param beginDate
      * @param endDate
@@ -350,29 +361,30 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
 
     /**
      * 分页查询 图文统计
+     *
      * @param dto
      * @return
      */
     @Override
     public PageResponseResult newPage(StatisticsDto dto) {
 
-        //类型转换
+        // 类型转换
         Date beginDate = DateUtils.stringToDate(dto.getBeginDate());
         Date endDate = DateUtils.stringToDate(dto.getEndDate());
-        //检查参数
+        // 检查参数
         dto.checkParam();
-        //分页查询
+        // 分页查询
         IPage page = new Page(dto.getPage(), dto.getSize());
         LambdaQueryWrapper<ApArticle> lambdaQueryWrapper = Wrappers.<ApArticle>lambdaQuery()
                 .eq(ApArticle::getAuthorId, dto.getWmUserId())
-                .between(ApArticle::getPublishTime,beginDate, endDate)
-                .select(ApArticle::getId,ApArticle::getTitle,ApArticle::getLikes,ApArticle::getCollection,ApArticle::getComment,ApArticle::getViews);
+                .between(ApArticle::getPublishTime, beginDate, endDate)
+                .select(ApArticle::getId, ApArticle::getTitle, ApArticle::getLikes, ApArticle::getCollection, ApArticle::getComment, ApArticle::getViews);
 
         lambdaQueryWrapper.orderByDesc(ApArticle::getPublishTime);
 
-        page = page(page,lambdaQueryWrapper);
+        page = page(page, lambdaQueryWrapper);
 
-        PageResponseResult responseResult = new PageResponseResult(dto.getPage(),dto.getSize(),(int)page.getTotal());
+        PageResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
         responseResult.setData(page.getRecords());
 
         return responseResult;
@@ -380,6 +392,7 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
 
     /**
      * 查询文章评论统计
+     *
      * @param dto
      * @return
      */
@@ -387,11 +400,11 @@ public class ApArticleServiceImpl  extends ServiceImpl<ApArticleMapper, ApArticl
     public PageResponseResult findNewsComments(ArticleCommentDto dto) {
 
         Integer currentPage = dto.getPage();
-        dto.setPage((dto.getPage()-1)*dto.getSize());
+        dto.setPage((dto.getPage() - 1) * dto.getSize());
         List<ArticleCommnetVo> list = apArticleMapper.findNewsComments(dto);
         int count = apArticleMapper.findNewsCommentsCount(dto);
 
-        PageResponseResult responseResult = new PageResponseResult(currentPage,dto.getSize(),count);
+        PageResponseResult responseResult = new PageResponseResult(currentPage, dto.getSize(), count);
         responseResult.setData(list);
         return responseResult;
     }
