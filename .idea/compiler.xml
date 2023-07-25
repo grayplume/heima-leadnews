@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <excludeFromCompile>
-      <directory url="file://$PROJECT_DIR$/heima-leadnews-service/heima-leadnews-user/src/main/resources/archetype-resources" includeSubdirectories="true" />
-    </excludeFromCompile>
     <annotationProcessing>
-      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="freemarker-demo" />
         <module name="heima-file-starter" />
+        <module name="freemarker-demo" />
         <module name="minio-demo" />
         <module name="heima-leadnews-wemedia-gateway" />
-        <module name="heima-leadnews-wemedia" />
-        <module name="tess4j-demo" />
         <module name="heima-leadnews-behavior" />
-        <module name="heima-leadnews-feign-api" />
+        <module name="tess4j-demo" />
+        <module name="heima-leadnews-wemedia" />
         <module name="heima-leadnews-user" />
-        <module name="heima-leadnews-article" />
-        <module name="kafka-demo" />
-        <module name="heima-leadnews-admin" />
         <module name="heima-leadnews-admin-gateway" />
+        <module name="heima-leadnews-feign-api" />
+        <module name="kafka-demo" />
+        <module name="heima-leadnews-article" />
+        <module name="heima-leadnews-admin" />
         <module name="xxljob-demo" />
         <module name="es-init" />
         <module name="heima-leadnews-schedule" />
@@ -35,14 +31,13 @@
         <module name="heima-leadnews-model" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="8">
       <module name="es-init" target="1.8" />
       <module name="freemarker-demo" target="1.8" />
       <module name="heima-file-starter" target="1.8" />
       <module name="heima-leadnews" target="1.8" />
       <module name="heima-leadnews-admin" target="1.8" />
       <module name="heima-leadnews-admin-gateway" target="1.8" />
-      <module name="heima-leadnews-apis" target="1.8" />
       <module name="heima-leadnews-app-gateway" target="1.8" />
       <module name="heima-leadnews-article" target="1.8" />
       <module name="heima-leadnews-basic" target="1.8" />
@@ -75,7 +70,6 @@
       <module name="heima-leadnews" options="-parameters" />
       <module name="heima-leadnews-admin" options="-parameters" />
       <module name="heima-leadnews-admin-gateway" options="-parameters" />
-      <module name="heima-leadnews-apis" options="-parameters" />
       <module name="heima-leadnews-app-gateway" options="-parameters" />
       <module name="heima-leadnews-article" options="-parameters" />
       <module name="heima-leadnews-basic" options="-parameters" />
